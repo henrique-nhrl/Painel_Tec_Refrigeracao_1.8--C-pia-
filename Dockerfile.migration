@@ -1,21 +1,8 @@
-# Use a Node.js base image
-FROM node:16
+# Use the official Supabase migration image
+FROM supabase/postgres-migrations:latest
 
-# Set the working directory
-WORKDIR /migrations
+# Copy migrations from local folder
+COPY ./supabase/migrations /supabase/migrations
 
-# Copy migration scripts
-COPY ./supabase/migrations /migrations
-
-# Install necessary dependencies for running migrations
-RUN npm install pg
-
-# Set environment variables for database connection
-ENV SUPABASE_DB_HOST=${SUPABASE_DB_HOST}
-ENV SUPABASE_DB_NAME=${SUPABASE_DB_NAME}
-ENV SUPABASE_DB_USER=${SUPABASE_DB_USER}
-ENV SUPABASE_DB_PASSWORD=${SUPABASE_DB_PASSWORD}
-ENV SUPABASE_DB_PORT=${SUPABASE_DB_PORT}
-
-# Command to run migrations
-CMD ["node", "scripts/run-migration.js"]
+# Use the standard Supabase migrations command
+CMD ["supabase", "migration", "up", "--database-url", "$DB_CONNECTION_STRING"]

@@ -1,36 +1,18 @@
-# Copy the migration script
-FROM node:16 AS build
-
-# Set the working directory
+# Build stage
+FROM node:20 AS builder
 WORKDIR /app
-
-# Copy package.json and package-lock.json
+ENV NODE_ENV=development
 COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
+RUN npm ci
 COPY . .
+    RUN npm run build:docker
 
-# Build the application
-RUN npm run build
-
-# Production image
+# Production stage
 FROM node:16
-
-# Set the working directory
 WORKDIR /app
-
-# Copy built files from the build stage
-COPY --from=build /app/dist ./dist
-
-# Install only production dependencies
+ENV NODE_ENV=production
 COPY package*.json ./
-RUN npm install --only=production
-
-# Expose the application port
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
 EXPOSE 3000
-
-# Start the application
 CMD ["npm", "start"]

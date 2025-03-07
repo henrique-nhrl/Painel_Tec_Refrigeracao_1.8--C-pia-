@@ -1,4 +1,4 @@
-    "migration:run": "node scripts/run-migration.js run",
+{
   "name": "sistema-admin",
   "private": true,
   "version": "0.0.0",
@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:docker": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "migration:create": "node scripts/run-migration.js create",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
+    "supabase": "^2.15.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "@vitejs/plugin-react": "^4.2.1",
