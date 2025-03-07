@@ -1,4 +1,4 @@
-{
+    "migration:run": "node scripts/run-migration.js run",
   "name": "sistema-admin",
   "private": true,
   "version": "0.0.0",

@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { Client } = require('pg');
-const { createClient } = require('@supabase/supabase-js');
+import fs from 'fs';
+import path from 'path';
+import { Client } from 'pg';
+import { createClient } from '@supabase/supabase-js';
 
 // Configure timezone
 process.env.TZ = 'America/Sao_Paulo';
@@ -11,12 +11,12 @@ const formatDateBR = (date) => {
   return date.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 };
 
-// Singleton  for database connection
+// Singleton for database connection
 class DatabaseConnection {
   static instance = null;
   static async getInstance() {
     if (!this.instance) {
-      const connectionString = process.env.DB_CONNECTION_STRING || `postgresql://${process.env.SUPABASE_DB_USER}:${process.env.SUPABASE_DB_PASSWORD}@${process.env.SUPABASE_DB_HOST}:${process.env.SUPABASE_DB_PORT}/${process.env.SUPABASE_DB_NAME}`;
+      const connectionString = process.env.DB_CONNECTION_STRING;
       this.instance = new Client({ connectionString });
       await this.connectWithRetry();
     }

@@ -7,30 +7,37 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    env_file: .env
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+      VITE_SUPPORT_API_KEY: ${VITE_SUPPORT_API_KEY}
+      SUPABASE_DB_HOST: ${SUPABASE_DB_HOST}
+      SUPABASE_DB_NAME: ${SUPABASE_DB_NAME}
+      SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      SUPABASE_DB_PORT: ${SUPABASE_DB_PORT}
+      SUPABASE_DB_USER: ${SUPABASE_DB_USER}
+      DB_CONNECTION_STRING: ${DB_CONNECTION_STRING:-localhost}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
-    environment:
-      - NODE_ENV=development
-      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
-      - TZ=America/Sao_Paulo
+    restart: on-failure
 
-  migration:
+  migrations:
     build:
       context: .
       dockerfile: Dockerfile.migration
     volumes:
       - ./supabase/migrations:/migrations
-    env_file: .env
     environment:
-      - TZ=America/Sao_Paulo
-      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-postgresql://postgres:postgres@localhost:5432/postgres}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      SUPABASE_DB_HOST: ${SUPABASE_DB_HOST}
+      SUPABASE_DB_NAME: ${SUPABASE_DB_NAME}
+      SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      SUPABASE_DB_PORT: ${SUPABASE_DB_PORT}
+      SUPABASE_DB_USER: ${SUPABASE_DB_USER}
     restart: on-failure

@@ -1,63 +1,58 @@
-# Docker Infrastructure
+# Projeto Vite com Supabase
 
-This project includes a complete Docker infrastructure for development and deployment.
+Este projeto utiliza Vite com TypeScript e Supabase como banco de dados. Abaixo estão as instruções para configurar e executar a aplicação.
 
-## Prerequisites
+## Estrutura do Projeto
 
-- Docker
-- Docker Compose
-- Node.js 20+
+- `docker-compose.yml`: Configuração do Docker Compose para os serviços da aplicação.
+- `Dockerfile`: Dockerfile para a aplicação principal.
+- `Dockerfile.migration`: Dockerfile para o serviço de migrações.
+- `scripts/run-migration.js`: Script para executar as migrações no banco de dados Supabase.
+- `supabase/migrations`: Diretório contendo os arquivos de migração SQL.
 
-## Environment Variables
+## Variáveis de Ambiente
 
-Create a `.env` file with the following variables:
+Certifique-se de definir as seguintes variáveis de ambiente no seu arquivo `.env`:
 
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-DB_CONNECTION_STRING=postgresql://postgres:password@host:5432/database
+```
+SUPABASE_URL=
+SUPABASE_KEY=
+VITE_SUPABASE_ANON_KEY=
+VITE_API_BASE_URL=
+VITE_SUPPORT_API_KEY=
+SUPABASE_DB_HOST=
+SUPABASE_DB_NAME=
+SUPABASE_DB_PASSWORD=
+SUPABASE_DB_PORT=5432
+SUPABASE_DB_USER=
 ```
 
-## Commands
+## Executando a Aplicação
 
-Start the application:
-```bash
-docker-compose up
-```
+1. **Construir e iniciar os serviços**:
+   ```bash
+   docker-compose up --build
+   ```
 
-Run migrations only:
-```bash
-docker-compose run migration
-```
+2. **Executar migrações**:
+   As migrações serão aplicadas automaticamente ao iniciar o serviço de migrações. Para executar manualmente, você pode usar:
+   ```bash
+   docker-compose run migrations
+   ```
 
-Build for production:
-```bash
-docker-compose -f docker-compose.prod.yml up --build
-```
+## Controle de Migrações
 
-## Migration System
+As migrações são registradas na tabela `migracoes_do_sistema`, que contém as seguintes colunas:
 
-Migrations are stored in `supabase/migrations` and follow the naming convention:
-```
-YYYYMMDDHHMMSS_description.sql
-```
+- `ID`: Identificador único da migração.
+- `Timestamp`: Data e hora da migração.
+- `Titulo`: Título da migração (extraído do nome do arquivo).
+- `Data_aplicacao`: Data em que a migração foi aplicada.
 
-Example:
-```
-20240301123000_create_users_table.sql
-```
+## Contribuições
 
-Migrations are tracked in the `migracoes_do_sistema` table and only run once.
+Sinta-se à vontade para contribuir com melhorias ou correções. Para isso, faça um fork do repositório e envie um pull request.
 
-## Development
+## Licença
 
-The application runs on port 3000 with hot-reload enabled. Changes to the source code will automatically reflect in the browser.
-
-## Production
-
-For production deployment, use:
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-This will build an optimized image and run the application in production mode.
+Este projeto está licenciado sob a MIT License.

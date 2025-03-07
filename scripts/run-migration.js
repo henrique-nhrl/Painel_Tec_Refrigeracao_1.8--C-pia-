@@ -1,26 +1,41 @@
-#!/usr/bin/env node 
-
-const { spawn } = require('child_process');
+const { Client } = require('pg');
+const fs = require('fs');
 const path = require('path');
 
-const args = process.argv.slice(2);
-const command = args[0] === 'create' ? 'create' : 'run';
+// Set up database connection
+const client = new Client({
+  host: process.env.SUPABASE_DB_HOST,
+  database: process.env.SUPABASE_DB_NAME,
+  user: process.env.SUPABASE_DB_USER,
+  password: process.env.SUPABASE_DB_PASSWORD,
+  port: process.env.SUPABASE_DB_PORT,
+});
 
-if (command === 'create' && args[1]) {
-  const timestamp = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
-  const filename = `${timestamp}_${args[1]}.sql`;
-  const filepath = path.join(__dirname, '..', 'supabase', 'migrations', filename);
-  
-  require('fs').writeFileSync(filepath, '-- Migration: ' + args[1] + '\n\n');
-  console.log(`Created migration file: ${filename}`);
-} else if (command === 'run') {
-  const docker = spawn('docker-compose', ['run', 'migration'], {
-    stdio: 'inherit',
-    shell: true
-  });
+async function runMigrations() {
+  try {
+    await client.connect();
+    console.log('Connected to the database.');
 
-  docker.on('error', (err) => {
-    console.error('Failed to run migration:', err);
-    process.exit(1);
-  });
+    // Read migration files from the migrations directory
+    const migrationFiles = fs.readdirSync(path.join(__dirname, '../supabase/migrations')).sort();
+
+    for (const file of migrationFiles) {
+      const filePath = path.join(__dirname, '../supabase/migrations', file);
+      const sql = fs.readFileSync(filePath, 'utf8');
+
+      // Execute migration
+      await client.query(sql);
+      console.log(`Migration ${file} applied successfully.`);
+    }
+
+    console.log('All migrations applied successfully.');
+  } catch (error) {
+    console.error('Error applying migrations:', error);
+  } finally {
+    await client.end();
+    console.log('Database connection closed.');
+  }
 }
+
+// Run the migrations
+runMigrations();
