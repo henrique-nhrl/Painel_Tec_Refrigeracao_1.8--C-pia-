@@ -12,10 +12,8 @@ RUN apk add --no-cache nginx curl bash postgresql-client && \
     mkdir -p /var/run/nginx && \
     mkdir -p /etc/nginx/http.d && \
     # Install Supabase CLI
-    curl -fsSL https://github.com/supabase/cli/releases/download/v1.129.0/supabase-cli-alpine.sh -o supabase-cli.sh && \
-    sh supabase-cli.sh && \
-    ln -s /root/.supabase/bin/supabase /usr/local/bin/supabase && \
-    rm supabase-cli.sh
+    npm install -g supabase@1.129.0 && \
+    ln -s /usr/local/bin/supabase /usr/bin/supabase
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
