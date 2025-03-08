@@ -1,4 +1,3 @@
-
 # Build stage
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -10,11 +9,13 @@ RUN npm run build
 # Production stage
 FROM node:20-alpine
 RUN apk add --no-cache nginx curl && \
-    npm install -g supabase-cli@latest && \
-    mkdir -p /var/run/nginx
+    npm install -g supabase@latest && \
+    mkdir -p /var/run/nginx && \
+    mkdir -p /etc/nginx/http.d
+
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/http.d/default.conf
 
 # Environment variables
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
@@ -28,4 +29,4 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:80 || exit 1
 
-CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL || echo 'Migração falhou - continuando...'; nginx -g 'daemon off;'"
+CMD sh -c "npx supabase db push --db-url $SUPABASE_DATABASE_URL || echo 'Migração falhou - continuando...'; nginx -g 'daemon off;'"
