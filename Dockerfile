@@ -1,6 +1,6 @@
 
 # Build stage
-FROM node:20.8.2-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps || (npm install --legacy-peer-deps && npm cache clean --force)
@@ -8,9 +8,10 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20.8.2-alpine
-RUN apk add --no-cache nginx && \
-    npm install -g supabase-cli@latest
+FROM node:20-alpine
+RUN apk add --no-cache nginx curl && \
+    npm install -g supabase-cli@latest && \
+    mkdir -p /var/run/nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -24,4 +25,7 @@ ENV SUPABASE_SERVICE_KEY=$SUPABASE_SERVICE_KEY
 ENV SUPABASE_DATABASE_URL=$SUPABASE_DATABASE_URL
 
 EXPOSE 80
-CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL && nginx -g 'daemon off;'"
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:80 || exit 1
+
+CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL || echo 'Migração falhou - continuando...'; nginx -g 'daemon off;'"
