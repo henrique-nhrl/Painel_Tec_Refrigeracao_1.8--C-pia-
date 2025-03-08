@@ -11,7 +11,7 @@ FROM node:20-alpine
 RUN apk add --no-cache nginx curl bash postgresql-client && \
     mkdir -p /var/run/nginx && \
     mkdir -p /etc/nginx/http.d && \
-    # Install Supabase CLI
+    # Install Supabase CLI via npm
     npm install -g supabase@1.129.0 && \
     ln -s /usr/local/bin/supabase /usr/bin/supabase
 
