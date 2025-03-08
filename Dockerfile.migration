@@ -1,8 +1,0 @@
-# Use the official Supabase migration image
-FROM supabase/postgres-migrations:latest
-
-# Copy migrations from local folder
-COPY ./supabase/migrations /supabase/migrations
-
-# Use the standard Supabase migrations command
-CMD ["supabase", "migration", "up", "--database-url", "$DB_CONNECTION_STRING"]
