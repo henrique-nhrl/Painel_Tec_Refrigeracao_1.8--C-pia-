@@ -17,7 +17,7 @@ RUN apk add --no-cache nginx curl bash && \
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
-COPY nginx.conf /etc/nginx/http.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Environment variables
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
