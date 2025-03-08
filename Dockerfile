@@ -11,23 +11,23 @@ FROM node:20-alpine
 RUN apk add --no-cache nginx curl bash postgresql-client && \
     mkdir -p /var/run/nginx && \
     mkdir -p /etc/nginx/http.d && \
-    # Install Supabase CLI using official method
-    curl -L https://github.com/supabase/cli/raw/main/install.sh | sh
+    # Install Supabase CLI with explicit path
+    curl -fsSL https://github.com/supabase/cli/raw/main/install.sh | bash -s -- -b /usr/local/bin
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Environment variables
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-ENV VITE_SUPPORT_API_KEY=$VITE_SUPPORT_API_KEY
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
-ENV SUPABASE_SERVICE_KEY=$SUPABASE_SERVICE_KEY
-ENV SUPABASE_DATABASE_URL=$SUPABASE_DATABASE_URL
+# Environment variables with defaults
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL:-}
+ENV VITE_SUPPORT_API_KEY=${VITE_SUPPORT_API_KEY:-}
+ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-}
+ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-}
+ENV SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY:-}
+ENV SUPABASE_DATABASE_URL=${SUPABASE_DATABASE_URL:-}
 
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:80 || exit 1
 
-CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL && nginx -g 'daemon off;'"
+CMD ["sh", "-c", "supabase db push --db-url $SUPABASE_DATABASE_URL && nginx -g 'daemon off;'"]
