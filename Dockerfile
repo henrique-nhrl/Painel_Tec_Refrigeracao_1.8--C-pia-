@@ -12,7 +12,7 @@ RUN apk add --no-cache nginx curl bash && \
     mkdir -p /var/run/nginx && \
     mkdir -p /etc/nginx/http.d && \
     # Install Supabase CLI
-    curl -fsSL https://github.com/supabase/cli/raw/main/install.sh | bash && \
+    curl -fsSL https://github.com/supabase/cli/releases/download/v1.129.0/supabase-cli-alpine.sh | sh && \
     ln -s /root/.supabase/bin/supabase /usr/local/bin/supabase
 
 COPY --from=builder /app/dist /usr/share/nginx/html
