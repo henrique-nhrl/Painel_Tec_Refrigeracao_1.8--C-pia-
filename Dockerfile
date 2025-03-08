@@ -1,16 +1,16 @@
 
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20.8.2-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps || (npm install --legacy-peer-deps && npm cache clean --force)
 COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:20.8.2-alpine
 RUN apk add --no-cache nginx && \
-    npm install -g supabase-cli
+    npm install -g supabase-cli@latest
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
 COPY nginx.conf /etc/nginx/conf.d/default.conf
