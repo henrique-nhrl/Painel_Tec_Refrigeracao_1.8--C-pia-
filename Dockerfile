@@ -8,7 +8,7 @@ RUN npm run build
 
 # Production stage
 FROM node:20-alpine
-RUN apk add --no-cache nginx curl bash && \
+RUN apk add --no-cache nginx curl bash postgresql-client && \
     mkdir -p /var/run/nginx && \
     mkdir -p /etc/nginx/http.d && \
     # Install Supabase CLI
@@ -31,4 +31,4 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:80 || exit 1
 
-CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL || echo 'Migração falhou - continuando...'; nginx -g 'daemon off;'"
+CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL && nginx -g 'daemon off;'"
