@@ -8,10 +8,12 @@ RUN npm run build
 
 # Production stage
 FROM node:20-alpine
-RUN apk add --no-cache nginx curl && \
-    npm install -g supabase@latest && \
+RUN apk add --no-cache nginx curl bash && \
     mkdir -p /var/run/nginx && \
-    mkdir -p /etc/nginx/http.d
+    mkdir -p /etc/nginx/http.d && \
+    # Install Supabase CLI
+    curl -fsSL https://github.com/supabase/cli/raw/main/install.sh | bash && \
+    ln -s /root/.supabase/bin/supabase /usr/local/bin/supabase
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY supabase /app/supabase
@@ -29,4 +31,4 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:80 || exit 1
 
-CMD sh -c "npx supabase db push --db-url $SUPABASE_DATABASE_URL || echo 'Migração falhou - continuando...'; nginx -g 'daemon off;'"
+CMD sh -c "supabase db push --db-url $SUPABASE_DATABASE_URL || echo 'Migração falhou - continuando...'; nginx -g 'daemon off;'"
