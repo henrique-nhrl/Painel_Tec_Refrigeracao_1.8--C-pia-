@@ -5,19 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
-      args:
-        - VITE_SUPABASE_URL=${SUPABASE_URL}
-        - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     ports:
-      - "80:80"
-    env_file: .env
-    depends_on:
-      migrations:
-        condition: service_completed_successfully
+      - '80:80'
+    env_file:
+      - .env
 
   migrations:
     build:
       context: .
       dockerfile: Dockerfile.migrations
-    env_file: .env
-    command: ["node", "migrate.js"]
+    env_file:
+      - .env

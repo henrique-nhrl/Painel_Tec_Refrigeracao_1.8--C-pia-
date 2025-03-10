@@ -2,6 +2,7 @@ FROM node:18-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+RUN npm install -g supabase
 COPY supabase/migrations ./supabase/migrations
 COPY migrate.js .
 CMD ["node", "migrate.js"]
