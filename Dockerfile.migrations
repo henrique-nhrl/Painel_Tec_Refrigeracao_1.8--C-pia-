@@ -1,6 +1,7 @@
 FROM node:18-alpine
 WORKDIR /app
-RUN npm install pg
-COPY supabase/migrations ./migrations
-COPY migrate.js ./
+COPY package*.json ./
+RUN npm ci
+COPY supabase/migrations ./supabase/migrations
+COPY migrate.js .
 CMD ["node", "migrate.js"]
