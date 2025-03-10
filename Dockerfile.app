@@ -8,7 +8,7 @@ RUN npm install --save-dev supabase
 
 COPY . .
 
-# Expor a porta 3000
+# Expor a  porta 3000
 EXPOSE 3000
 
 # Comando para iniciar a aplicação
