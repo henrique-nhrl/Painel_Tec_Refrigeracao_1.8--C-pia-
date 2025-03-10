@@ -16,8 +16,7 @@ CMD ["npm", "run", "start"]
 
 # Post-deployment script
 RUN echo "#!/bin/sh" > /app/run-migrations.sh && \
-    echo "docker build -t migrations -f Dockerfile.migrations ." >> /app/run-migrations.sh && \
-    echo "docker run --rm -e DATABASE_URL migrations" >> /app/run-migrations.sh && \
+    echo "docker-compose run --rm migrations npx supabase db push" >> /app/run-migrations.sh && \
     chmod +x /app/run-migrations.sh
 
 # Adicionar o script ao post-deploy do Coolify

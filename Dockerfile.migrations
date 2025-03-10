@@ -1,4 +1,4 @@
-# Dockerfile.migrations
+#  Dockerfile.migrations
 FROM node:16
 
 WORKDIR /migrations

@@ -6,13 +6,23 @@ services:
       context: .
       dockerfile: Dockerfile.app
     ports:
-      - '3000:3000'
-    env_file:
-      - .env
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - migrations
+    networks:
+      - app-network
 
   migrations:
     build:
       context: .
       dockerfile: Dockerfile.migrations
-    env_file:
-      - .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
